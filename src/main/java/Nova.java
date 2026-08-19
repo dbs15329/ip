@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Nova {
@@ -5,8 +6,7 @@ public class Nova {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Task[] tasks = new Task[100];
-        int count = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
 
         System.out.println(LINE);
         System.out.println(" Hello! I'm Nova");
@@ -26,25 +26,34 @@ public class Nova {
                 } else if (input.equals("list")) {
                     System.out.println(LINE);
                     System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < count; i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
                     System.out.println(LINE);
 
                 } else if (input.startsWith("mark")) {
-                    int index = parseIndex(input, "mark", count);
-                    tasks[index].markAsDone();
+                    int index = parseIndex(input, "mark", tasks.size());
+                    tasks.get(index).markAsDone();
                     System.out.println(LINE);
                     System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   " + tasks[index]);
+                    System.out.println("   " + tasks.get(index));
                     System.out.println(LINE);
 
                 } else if (input.startsWith("unmark")) {
-                    int index = parseIndex(input, "unmark", count);
-                    tasks[index].markAsNotDone();
+                    int index = parseIndex(input, "unmark", tasks.size());
+                    tasks.get(index).markAsNotDone();
                     System.out.println(LINE);
                     System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + tasks[index]);
+                    System.out.println("   " + tasks.get(index));
+                    System.out.println(LINE);
+
+                } else if (input.startsWith("delete")) {
+                    int index = parseIndex(input, "delete", tasks.size());
+                    Task removed = tasks.remove(index);
+                    System.out.println(LINE);
+                    System.out.println(" Noted. I've removed this task:");
+                    System.out.println("   " + removed);
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(LINE);
 
                 } else if (input.startsWith("todo")) {
@@ -52,27 +61,24 @@ public class Nova {
                     if (desc.isEmpty()) {
                         throw new NovaException("The description of a todo cannot be empty.");
                     }
-                    tasks[count] = new Todo(desc);
-                    count++;
-                    printAdded(tasks[count - 1], count);
+                    tasks.add(new Todo(desc));
+                    printAdded(tasks);
 
                 } else if (input.startsWith("deadline")) {
                     String[] parts = input.substring(8).trim().split(" /by ");
                     if (parts.length < 2 || parts[0].isEmpty()) {
                         throw new NovaException("A deadline needs a description and a /by time.");
                     }
-                    tasks[count] = new Deadline(parts[0], parts[1]);
-                    count++;
-                    printAdded(tasks[count - 1], count);
+                    tasks.add(new Deadline(parts[0], parts[1]));
+                    printAdded(tasks);
 
                 } else if (input.startsWith("event")) {
                     String[] parts = input.substring(5).trim().split(" /from | /to ");
                     if (parts.length < 3 || parts[0].isEmpty()) {
                         throw new NovaException("An event needs a description, a /from time and a /to time.");
                     }
-                    tasks[count] = new Event(parts[0], parts[1], parts[2]);
-                    count++;
-                    printAdded(tasks[count - 1], count);
+                    tasks.add(new Event(parts[0], parts[1], parts[2]));
+                    printAdded(tasks);
 
                 } else {
                     throw new NovaException("Sorry, I don't know what that means.");
@@ -88,11 +94,11 @@ public class Nova {
         sc.close();
     }
 
-    private static void printAdded(Task task, int count) {
+    private static void printAdded(ArrayList<Task> tasks) {
         System.out.println(LINE);
         System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + count + " tasks in the list.");
+        System.out.println("   " + tasks.get(tasks.size() - 1));
+        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
         System.out.println(LINE);
     }
 
