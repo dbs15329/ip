@@ -11,10 +11,10 @@ import nova.DateTimes;
  */
 public class Event extends Task {
     /** When the event starts. Midnight means the user gave only a date. */
-    protected LocalDateTime from;
+    private final LocalDateTime from;
 
     /** When the event ends. Midnight means the user gave only a date. */
-    protected LocalDateTime to;
+    private final LocalDateTime to;
 
     /**
      * Creates an event that is not done yet.

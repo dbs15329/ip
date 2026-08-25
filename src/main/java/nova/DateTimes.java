@@ -27,16 +27,16 @@ public final class DateTimes {
      * the {@code uuuu} year pattern rather than {@code yyyy}.
      */
     private static final List<DateTimeFormatter> DATE_TIME_FORMATS = List.of(
-            strict("uuuu-MM-dd HHmm"),
-            strict("uuuu-MM-dd HH:mm"),
-            strict("d/M/uuuu HHmm"),
-            strict("d/M/uuuu HH:mm"),
+            createStrictFormatter("uuuu-MM-dd HHmm"),
+            createStrictFormatter("uuuu-MM-dd HH:mm"),
+            createStrictFormatter("d/M/uuuu HHmm"),
+            createStrictFormatter("d/M/uuuu HH:mm"),
             DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
     /** Input formats accepted for a bare date, which is read as midnight. */
     private static final List<DateTimeFormatter> DATE_FORMATS = List.of(
-            strict("uuuu-MM-dd"),
-            strict("d/M/uuuu"));
+            createStrictFormatter("uuuu-MM-dd"),
+            createStrictFormatter("d/M/uuuu"));
 
     private static final DateTimeFormatter DISPLAY_DATE =
             DateTimeFormatter.ofPattern("MMM dd yyyy");
@@ -48,7 +48,7 @@ public final class DateTimes {
     }
 
     /** Builds a formatter that rejects dates that do not exist. */
-    private static DateTimeFormatter strict(String pattern) {
+    private static DateTimeFormatter createStrictFormatter(String pattern) {
         return DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.STRICT);
     }
 

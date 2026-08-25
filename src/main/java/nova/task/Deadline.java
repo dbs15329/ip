@@ -10,7 +10,7 @@ import nova.DateTimes;
  */
 public class Deadline extends Task {
     /** When the task is due. Midnight means the user gave only a date. */
-    protected LocalDateTime by;
+    private final LocalDateTime by;
 
     /**
      * Creates a deadline that is not done yet.

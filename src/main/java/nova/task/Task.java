@@ -12,10 +12,10 @@ import java.time.LocalDate;
  */
 public class Task {
     /** What the user called this task. */
-    protected String description;
+    private final String description;
 
     /** Whether the user has marked this task as completed. */
-    protected boolean isDone;
+    private boolean isDone;
 
     /**
      * Creates a task that is not done yet.

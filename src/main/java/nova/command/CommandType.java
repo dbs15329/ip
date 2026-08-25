@@ -67,9 +67,9 @@ public enum CommandType {
      * @throws NovaException if the line does not start with a known keyword
      */
     public static CommandType fromInput(String input) throws NovaException {
-        for (CommandType c : CommandType.values()) {
-            if (input.equals(c.keyword) || input.startsWith(c.keyword + " ")) {
-                return c;
+        for (CommandType type : CommandType.values()) {
+            if (input.equals(type.keyword) || input.startsWith(type.keyword + " ")) {
+                return type;
             }
         }
         throw new NovaException("Sorry, I don't know what that means.");
