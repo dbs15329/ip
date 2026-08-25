@@ -28,6 +28,20 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
+## Testing
+
+JUnit 5 tests live under `src/test/java`, mirroring the package of the class
+under test (e.g. `nova.Parser` is tested by `nova.ParserTest`). Run them with
+`./gradlew test`.
+
+Coverage target: the top ~50% highest-value methods, prioritising complex,
+core, or otherwise critical logic. Update the tests alongside any code change
+so that the target keeps being met; a change that alters behaviour should
+change or add a test in the same commit.
+
+Name test methods `featureUnderTest_testScenario_expectedBehavior()`, e.g.
+`parse_todoWithoutDescription_exceptionThrown()`.
+
 ## Git
 
 Use lightweight tags unless the user requests an annotated tag.
