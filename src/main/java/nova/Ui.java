@@ -1,5 +1,9 @@
+package nova;
+
 import java.util.List;
 import java.util.Scanner;
+
+import nova.task.Task;
 
 /**
  * Handles everything the chatbot shows the user and everything it reads back.

@@ -1,3 +1,9 @@
+package nova.command;
+
+import nova.Storage;
+import nova.TaskList;
+import nova.Ui;
+
 /** Says goodbye and stops the chatbot. */
 public class ExitCommand extends Command {
     @Override

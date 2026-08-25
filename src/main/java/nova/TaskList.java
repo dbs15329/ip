@@ -1,7 +1,11 @@
+package nova;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import nova.task.Task;
 
 /**
  * The list of tasks the user is keeping track of.

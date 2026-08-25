@@ -1,3 +1,7 @@
+package nova.command;
+
+import nova.NovaException;
+
 /**
  * The keywords the chatbot understands, and the mapping from a line of user
  * input to the kind of command it starts.

@@ -1,3 +1,11 @@
+package nova.command;
+
+import nova.NovaException;
+import nova.Storage;
+import nova.TaskList;
+import nova.Ui;
+import nova.task.Task;
+
 /** Adds a new task to the list. */
 public class AddCommand extends Command {
     private final Task task;
