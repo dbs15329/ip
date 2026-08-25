@@ -5,6 +5,7 @@ import nova.command.Command;
 import nova.command.CommandType;
 import nova.command.DeleteCommand;
 import nova.command.ExitCommand;
+import nova.command.FindCommand;
 import nova.command.ListCommand;
 import nova.command.MarkCommand;
 import nova.command.OnCommand;
@@ -64,6 +65,12 @@ public class Parser {
 
             case EVENT:
                 return new AddCommand(parseEvent(arguments));
+
+            case FIND:
+                if (arguments.isEmpty()) {
+                    throw new NovaException("Tell me what to search for, e.g. find book.");
+                }
+                return new FindCommand(arguments);
 
             case ON:
                 if (arguments.isEmpty()) {

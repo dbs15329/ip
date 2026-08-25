@@ -32,7 +32,10 @@ public enum CommandType {
     EVENT("event"),
 
     /** Shows the tasks falling on a given date. */
-    ON("on");
+    ON("on"),
+
+    /** Shows the tasks whose description contains a given keyword. */
+    FIND("find");
 
     private final String keyword;
 

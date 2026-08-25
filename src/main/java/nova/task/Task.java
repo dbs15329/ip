@@ -48,6 +48,17 @@ public class Task {
 
 
     /**
+     * Returns whether this task's description contains the given keyword,
+     * ignoring case.
+     *
+     * @param keyword the text to search for
+     * @return true if the description contains it
+     */
+    public boolean hasKeyword(String keyword) {
+        return description.toLowerCase().contains(keyword.toLowerCase());
+    }
+
+    /**
      * Returns whether this task is associated with the given date. A plain
      * task has no date at all, so it never matches; dated subclasses
      * override this.

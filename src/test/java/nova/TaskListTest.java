@@ -107,6 +107,45 @@ public class TaskListTest {
         assertEquals(0, tasks.getTasksOn(LocalDate.of(2020, 1, 1)).size());
     }
 
+    @Test
+    public void find_keywordInSomeDescriptions_returnsOnlyThoseInOrder() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        tasks.add(new Todo("buy milk"));
+        tasks.add(new Deadline("return book", AUG_6_2PM));
+
+        List<Task> matches = tasks.find("book");
+
+        assertEquals(2, matches.size());
+        assertEquals("read book", matchDescription(matches.get(0)));
+        assertEquals("return book", matchDescription(matches.get(1)));
+    }
+
+    @Test
+    public void find_differentCase_stillMatches() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("Read Book"));
+
+        assertEquals(1, tasks.find("book").size());
+        assertEquals(1, tasks.find("BOOK").size());
+    }
+
+    @Test
+    public void find_partialWord_matches() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("bookkeeping"));
+
+        assertEquals(1, tasks.find("book").size());
+    }
+
+    @Test
+    public void find_keywordAbsent_returnsEmptyList() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+
+        assertEquals(0, tasks.find("bicycle").size());
+    }
+
     /** Pulls the description out of a task's save-file line, for readable assertions. */
     private static String matchDescription(Task task) {
         return task.toFileString().split(" \\| ", -1)[2];

@@ -75,6 +75,25 @@ public class TaskTest {
     }
 
     @Test
+    public void hasKeyword_keywordInDescription_true() {
+        Todo todo = new Todo("read book");
+
+        assertTrue(todo.hasKeyword("book"));
+        assertTrue(todo.hasKeyword("BOOK"));
+        assertTrue(todo.hasKeyword("read book"));
+    }
+
+    @Test
+    public void hasKeyword_keywordAbsent_false() {
+        assertFalse(new Todo("read book").hasKeyword("bicycle"));
+    }
+
+    @Test
+    public void hasKeyword_matchesDescriptionNotTheDate_false() {
+        assertFalse(new Deadline("return book", DEC_2_6PM).hasKeyword("Dec"));
+    }
+
+    @Test
     public void isOn_todo_alwaysFalse() {
         assertFalse(new Todo("read book").isOn(LocalDate.of(2019, 12, 2)));
     }

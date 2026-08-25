@@ -12,6 +12,7 @@ import nova.command.AddCommand;
 import nova.command.Command;
 import nova.command.DeleteCommand;
 import nova.command.ExitCommand;
+import nova.command.FindCommand;
 import nova.command.ListCommand;
 import nova.command.MarkCommand;
 import nova.command.OnCommand;
@@ -112,6 +113,17 @@ public class ParserTest {
     public void parse_onWithoutDate_exceptionThrown() {
         NovaException e = assertThrows(NovaException.class, () -> Parser.parse("on"));
         assertEquals("Tell me which date to look up, e.g. on 2019-12-02.", e.getMessage());
+    }
+
+    @Test
+    public void parse_findWithKeyword_returnsFindCommand() throws NovaException {
+        assertInstanceOf(FindCommand.class, Parser.parse("find book"));
+    }
+
+    @Test
+    public void parse_findWithoutKeyword_exceptionThrown() {
+        NovaException e = assertThrows(NovaException.class, () -> Parser.parse("find"));
+        assertEquals("Tell me what to search for, e.g. find book.", e.getMessage());
     }
 
     @Test
