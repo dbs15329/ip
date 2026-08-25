@@ -131,6 +131,23 @@ public class Ui {
     }
 
     /**
+     * Shows the tasks matching a search.
+     *
+     * @param matches the tasks whose description contains the keyword
+     */
+    public void showMatchingTasks(List<Task> matches) {
+        showLine();
+        System.out.println(" Here are the matching tasks in your list:");
+        if (matches.isEmpty()) {
+            System.out.println(" No matching tasks found.");
+        }
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + matches.get(i));
+        }
+        showLine();
+    }
+
+    /**
      * Warns that the save file could not be read in full.
      *
      * @param skipped how many lines had to be discarded

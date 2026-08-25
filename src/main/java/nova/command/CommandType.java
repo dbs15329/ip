@@ -15,7 +15,8 @@ public enum CommandType {
     TODO("todo"),
     DEADLINE("deadline"),
     EVENT("event"),
-    ON("on");
+    ON("on"),
+    FIND("find");
 
     private final String keyword;
 
