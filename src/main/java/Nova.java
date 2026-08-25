@@ -1,6 +1,4 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Nova {
     /** Save file location, relative to the project root. */
@@ -11,7 +9,7 @@ public class Nova {
 
     public static void main(String[] args) {
         ui.showWelcome();
-        ArrayList<Task> tasks = loadTasks();
+        TaskList tasks = loadTasks();
 
         while (true) {
             String input = ui.readCommand();
@@ -26,7 +24,7 @@ public class Nova {
                         return;
 
                     case LIST:
-                        ui.showTaskList(tasks);
+                        ui.showTaskList(tasks.asList());
                         break;
 
                     case MARK: {
@@ -86,13 +84,7 @@ public class Nova {
                             throw new NovaException("Tell me which date to look up, e.g. on 2019-12-02.");
                         }
                         LocalDate date = DateTimes.parseDate(arg);
-                        List<Task> matches = new ArrayList<>();
-                        for (Task task : tasks) {
-                            if (task.isOn(date)) {
-                                matches.add(task);
-                            }
-                        }
-                        ui.showTasksOn(DateTimes.formatDate(date), matches);
+                        ui.showTasksOn(DateTimes.formatDate(date), tasks.getTasksOn(date));
                         break;
                     }
 
@@ -107,16 +99,16 @@ public class Nova {
     }
 
     /** Adds a task to the list, saves the list, and confirms to the user. */
-    private static void addTask(ArrayList<Task> tasks, Task task) {
+    private static void addTask(TaskList tasks, Task task) {
         tasks.add(task);
         saveTasks(tasks);
         ui.showAdded(task, tasks.size());
     }
 
     /** Persists the task list, telling the user if the write failed. */
-    private static void saveTasks(List<Task> tasks) {
+    private static void saveTasks(TaskList tasks) {
         try {
-            storage.save(tasks);
+            storage.save(tasks.asList());
         } catch (NovaException e) {
             ui.showError(e.getMessage());
         }
@@ -126,16 +118,16 @@ public class Nova {
      * Loads the saved tasks, falling back to an empty list if the file could
      * not be read at all, and warning about any lines that were skipped.
      */
-    private static ArrayList<Task> loadTasks() {
+    private static TaskList loadTasks() {
         try {
-            ArrayList<Task> tasks = new ArrayList<>(storage.load());
+            TaskList tasks = new TaskList(storage.load());
             if (storage.getSkippedLineCount() > 0) {
                 ui.showLoadingError(storage.getSkippedLineCount());
             }
             return tasks;
         } catch (NovaException e) {
             ui.showError(e.getMessage());
-            return new ArrayList<>();
+            return new TaskList();
         }
     }
 
