@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.List;
 
 /**
@@ -18,18 +19,24 @@ import java.util.List;
  */
 public final class DateTimes {
 
-    /** Input formats accepted for a date plus a time of day. */
+    /**
+     * Input formats accepted for a date plus a time of day.
+     *
+     * <p>These are strict, so a date such as 2019-02-30 is rejected rather
+     * than quietly shifted to the end of the month. Strict resolution needs
+     * the {@code uuuu} year pattern rather than {@code yyyy}.
+     */
     private static final List<DateTimeFormatter> DATE_TIME_FORMATS = List.of(
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
-            DateTimeFormatter.ofPattern("d/M/yyyy HHmm"),
-            DateTimeFormatter.ofPattern("d/M/yyyy HH:mm"),
+            strict("uuuu-MM-dd HHmm"),
+            strict("uuuu-MM-dd HH:mm"),
+            strict("d/M/uuuu HHmm"),
+            strict("d/M/uuuu HH:mm"),
             DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
     /** Input formats accepted for a bare date, which is read as midnight. */
     private static final List<DateTimeFormatter> DATE_FORMATS = List.of(
-            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-            DateTimeFormatter.ofPattern("d/M/yyyy"));
+            strict("uuuu-MM-dd"),
+            strict("d/M/uuuu"));
 
     private static final DateTimeFormatter DISPLAY_DATE =
             DateTimeFormatter.ofPattern("MMM dd yyyy");
@@ -38,6 +45,11 @@ public final class DateTimes {
 
     /** Utility class: not meant to be instantiated. */
     private DateTimes() {
+    }
+
+    /** Builds a formatter that rejects dates that do not exist. */
+    private static DateTimeFormatter strict(String pattern) {
+        return DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.STRICT);
     }
 
     /**
