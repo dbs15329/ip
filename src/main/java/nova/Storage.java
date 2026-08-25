@@ -20,6 +20,18 @@ import nova.task.Todo;
  * prints anything, so the caller decides how problems are reported.
  */
 public class Storage {
+    /** Number of fields on a todo line: type, done flag, description. */
+    private static final int TODO_FIELD_COUNT = 3;
+
+    /** Number of fields on a deadline line: the todo fields plus a due date. */
+    private static final int DEADLINE_FIELD_COUNT = 4;
+
+    /** Number of fields on an event line: the todo fields plus a start and an end. */
+    private static final int EVENT_FIELD_COUNT = 5;
+
+    /** Index of the first field that is specific to a task type. */
+    private static final int FIRST_TYPE_SPECIFIC_FIELD = 3;
+
     private final Path file;
 
     /** Number of unreadable lines skipped during the most recent load. */
@@ -117,7 +129,7 @@ public class Storage {
      */
     private static Task parseSavedTask(String line) throws NovaException {
         String[] parts = line.split(" \\| ", -1);
-        if (parts.length < 3) {
+        if (parts.length < TODO_FIELD_COUNT) {
             throw new NovaException("Line has too few fields.");
         }
 
@@ -134,17 +146,17 @@ public class Storage {
         Task task;
         switch (parts[0]) {
             case "T":
-                requireFieldCount(parts, 3);
+                requireFieldCount(parts, TODO_FIELD_COUNT);
                 task = new Todo(description);
                 break;
 
             case "D":
-                requireFieldCount(parts, 4);
+                requireFieldCount(parts, DEADLINE_FIELD_COUNT);
                 task = new Deadline(description, DateTimes.parse(parts[3]));
                 break;
 
             case "E":
-                requireFieldCount(parts, 5);
+                requireFieldCount(parts, EVENT_FIELD_COUNT);
                 task = new Event(description, DateTimes.parse(parts[3]), DateTimes.parse(parts[4]));
                 break;
 
@@ -166,7 +178,7 @@ public class Storage {
         if (parts.length != expected) {
             throw new NovaException("Expected " + expected + " fields but found " + parts.length + ".");
         }
-        for (int i = 3; i < parts.length; i++) {
+        for (int i = FIRST_TYPE_SPECIFIC_FIELD; i < parts.length; i++) {
             if (parts[i].isBlank()) {
                 throw new NovaException("Field " + (i + 1) + " is empty.");
             }

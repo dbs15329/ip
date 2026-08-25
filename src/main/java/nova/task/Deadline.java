@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import nova.DateTimes;
 
 public class Deadline extends Task {
-    protected LocalDateTime by;
+    private final LocalDateTime by;
 
     public Deadline(String description, LocalDateTime by) {
         super(description);
