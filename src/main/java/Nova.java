@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -97,7 +98,7 @@ public class Nova {
                         if (parts.length < 2 || parts[0].isEmpty()) {
                             throw new NovaException("A deadline needs a description and a /by time.");
                         }
-                        tasks.add(new Deadline(parts[0], parts[1]));
+                        tasks.add(new Deadline(parts[0], DateTimes.parse(parts[1])));
                         save(tasks);
                         printAdded(tasks);
                         break;
@@ -108,9 +109,31 @@ public class Nova {
                         if (parts.length < 3 || parts[0].isEmpty()) {
                             throw new NovaException("An event needs a description, a /from time and a /to time.");
                         }
-                        tasks.add(new Event(parts[0], parts[1], parts[2]));
+                        tasks.add(new Event(parts[0], DateTimes.parse(parts[1]), DateTimes.parse(parts[2])));
                         save(tasks);
                         printAdded(tasks);
+                        break;
+                    }
+
+                    case ON: {
+                        String arg = input.substring(2).trim();
+                        if (arg.isEmpty()) {
+                            throw new NovaException("Tell me which date to look up, e.g. on 2019-12-02.");
+                        }
+                        LocalDate date = DateTimes.parseDate(arg);
+                        System.out.println(LINE);
+                        System.out.println(" Here is what you have on " + DateTimes.formatDate(date) + ":");
+                        int shown = 0;
+                        for (Task task : tasks) {
+                            if (task.isOn(date)) {
+                                shown++;
+                                System.out.println(" " + shown + "." + task);
+                            }
+                        }
+                        if (shown == 0) {
+                            System.out.println(" Nothing scheduled. Enjoy the day!");
+                        }
+                        System.out.println(LINE);
                         break;
                     }
 
@@ -223,12 +246,12 @@ public class Nova {
 
             case "D":
                 requireFieldCount(parts, 4);
-                task = new Deadline(description, parts[3]);
+                task = new Deadline(description, DateTimes.parse(parts[3]));
                 break;
 
             case "E":
                 requireFieldCount(parts, 5);
-                task = new Event(description, parts[3], parts[4]);
+                task = new Event(description, DateTimes.parse(parts[3]), DateTimes.parse(parts[4]));
                 break;
 
             default:
