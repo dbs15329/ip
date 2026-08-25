@@ -1,30 +1,29 @@
-public enum Command {
-    BYE("bye"),
-    LIST("list"),
-    MARK("mark"),
-    UNMARK("unmark"),
-    DELETE("delete"),
-    TODO("todo"),
-    DEADLINE("deadline"),
-    EVENT("event"),
-    ON("on");
+/**
+ * A single instruction from the user, ready to be carried out.
+ *
+ * <p>Parsing and execution are deliberately separated: {@link Parser} turns a
+ * line of text into the right subclass of this class, and the main loop only
+ * has to call {@link #execute}. Adding a new command therefore means adding a
+ * class rather than another branch in a growing switch.
+ */
+public abstract class Command {
 
-    private final String keyword;
+    /**
+     * Carries out this command.
+     *
+     * @param tasks   the task list to read or modify
+     * @param ui      used to report the outcome to the user
+     * @param storage used to persist the list when it changes
+     * @throws NovaException if the command cannot be carried out
+     */
+    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws NovaException;
 
-    Command(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public static Command fromInput(String input) throws NovaException {
-        for (Command c : Command.values()) {
-            if (input.equals(c.keyword) || input.startsWith(c.keyword + " ")) {
-                return c;
-            }
-        }
-        throw new NovaException("Sorry, I don't know what that means.");
+    /**
+     * Returns whether the chatbot should stop after this command.
+     *
+     * @return true only for the exit command
+     */
+    public boolean isExit() {
+        return false;
     }
 }
