@@ -19,6 +19,7 @@ public class Task {
         this.isDone = false;
     }
 
+
     /**
      * Returns the part of the save-file line shared by every task type,
      * i.e. the done flag followed by the description.
