@@ -68,6 +68,11 @@ public class Nova {
         }
     }
 
+    /**
+     * Starts the chatbot.
+     *
+     * @param args command line arguments; none are used
+     */
     public static void main(String[] args) {
         new Nova(DATA_FILE).run();
     }

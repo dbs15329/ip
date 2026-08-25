@@ -7,14 +7,31 @@ import nova.NovaException;
  * input to the kind of command it starts.
  */
 public enum CommandType {
+    /** Ends the session. */
     BYE("bye"),
+
+    /** Shows every task in the list. */
     LIST("list"),
+
+    /** Marks the given task as done. */
     MARK("mark"),
+
+    /** Marks the given task as not done. */
     UNMARK("unmark"),
+
+    /** Removes the given task from the list. */
     DELETE("delete"),
+
+    /** Adds a task with no date. */
     TODO("todo"),
+
+    /** Adds a task due by a given moment. */
     DEADLINE("deadline"),
+
+    /** Adds a task spanning a given stretch of time. */
     EVENT("event"),
+
+    /** Shows the tasks falling on a given date. */
     ON("on");
 
     private final String keyword;
