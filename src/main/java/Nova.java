@@ -4,58 +4,41 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Nova {
-    private static final String LINE = "____________________________________________________________";
-
     /**
      * Location of the save file, relative to the project root. Built with
      * Path.of so that the separator is correct on every operating system.
      */
     private static final Path DATA_FILE = Path.of("data", "nova.txt");
 
+    private static final Ui ui = new Ui();
+
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        System.out.println(LINE);
-        System.out.println(" Hello! I'm Nova");
-        System.out.println(" What can I do for you?");
-        System.out.println(LINE);
-
+        ui.showWelcome();
         ArrayList<Task> tasks = load();
 
         while (true) {
-            String input = sc.nextLine().trim();
+            String input = ui.readCommand();
 
             try {
                 Command command = Command.fromInput(input);
 
                 switch (command) {
                     case BYE:
-                        System.out.println(LINE);
-                        System.out.println(" Bye. Hope to see you again soon!");
-                        System.out.println(LINE);
-                        sc.close();
+                        ui.showGoodbye();
+                        ui.close();
                         return;
 
                     case LIST:
-                        System.out.println(LINE);
-                        System.out.println(" Here are the tasks in your list:");
-                        for (int i = 0; i < tasks.size(); i++) {
-                            System.out.println(" " + (i + 1) + "." + tasks.get(i));
-                        }
-                        System.out.println(LINE);
+                        ui.showTaskList(tasks);
                         break;
 
                     case MARK: {
                         int index = parseIndex(input, command, tasks.size());
                         tasks.get(index).markAsDone();
                         save(tasks);
-                        System.out.println(LINE);
-                        System.out.println(" Nice! I've marked this task as done:");
-                        System.out.println("   " + tasks.get(index));
-                        System.out.println(LINE);
+                        ui.showMarked(tasks.get(index));
                         break;
                     }
 
@@ -63,10 +46,7 @@ public class Nova {
                         int index = parseIndex(input, command, tasks.size());
                         tasks.get(index).markAsNotDone();
                         save(tasks);
-                        System.out.println(LINE);
-                        System.out.println(" OK, I've marked this task as not done yet:");
-                        System.out.println("   " + tasks.get(index));
-                        System.out.println(LINE);
+                        ui.showUnmarked(tasks.get(index));
                         break;
                     }
 
@@ -74,11 +54,7 @@ public class Nova {
                         int index = parseIndex(input, command, tasks.size());
                         Task removed = tasks.remove(index);
                         save(tasks);
-                        System.out.println(LINE);
-                        System.out.println(" Noted. I've removed this task:");
-                        System.out.println("   " + removed);
-                        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-                        System.out.println(LINE);
+                        ui.showRemoved(removed, tasks.size());
                         break;
                     }
 
@@ -87,9 +63,7 @@ public class Nova {
                         if (desc.isEmpty()) {
                             throw new NovaException("The description of a todo cannot be empty.");
                         }
-                        tasks.add(new Todo(desc));
-                        save(tasks);
-                        printAdded(tasks);
+                        addTask(tasks, new Todo(desc));
                         break;
                     }
 
@@ -98,9 +72,7 @@ public class Nova {
                         if (parts.length < 2 || parts[0].isEmpty()) {
                             throw new NovaException("A deadline needs a description and a /by time.");
                         }
-                        tasks.add(new Deadline(parts[0], DateTimes.parse(parts[1])));
-                        save(tasks);
-                        printAdded(tasks);
+                        addTask(tasks, new Deadline(parts[0], DateTimes.parse(parts[1])));
                         break;
                     }
 
@@ -109,9 +81,7 @@ public class Nova {
                         if (parts.length < 3 || parts[0].isEmpty()) {
                             throw new NovaException("An event needs a description, a /from time and a /to time.");
                         }
-                        tasks.add(new Event(parts[0], DateTimes.parse(parts[1]), DateTimes.parse(parts[2])));
-                        save(tasks);
-                        printAdded(tasks);
+                        addTask(tasks, new Event(parts[0], DateTimes.parse(parts[1]), DateTimes.parse(parts[2])));
                         break;
                     }
 
@@ -121,19 +91,13 @@ public class Nova {
                             throw new NovaException("Tell me which date to look up, e.g. on 2019-12-02.");
                         }
                         LocalDate date = DateTimes.parseDate(arg);
-                        System.out.println(LINE);
-                        System.out.println(" Here is what you have on " + DateTimes.formatDate(date) + ":");
-                        int shown = 0;
+                        List<Task> matches = new ArrayList<>();
                         for (Task task : tasks) {
                             if (task.isOn(date)) {
-                                shown++;
-                                System.out.println(" " + shown + "." + task);
+                                matches.add(task);
                             }
                         }
-                        if (shown == 0) {
-                            System.out.println(" Nothing scheduled. Enjoy the day!");
-                        }
-                        System.out.println(LINE);
+                        ui.showTasksOn(DateTimes.formatDate(date), matches);
                         break;
                     }
 
@@ -142,11 +106,16 @@ public class Nova {
                 }
 
             } catch (NovaException e) {
-                System.out.println(LINE);
-                System.out.println(" OOPS!!! " + e.getMessage());
-                System.out.println(LINE);
+                ui.showError(e.getMessage());
             }
         }
+    }
+
+    /** Adds a task to the list, saves the list, and confirms to the user. */
+    private static void addTask(ArrayList<Task> tasks, Task task) {
+        tasks.add(task);
+        save(tasks);
+        ui.showAdded(task, tasks.size());
     }
 
     /**
@@ -167,7 +136,7 @@ public class Nova {
             }
             Files.write(DATA_FILE, lines);
         } catch (IOException e) {
-            printBlock(" OOPS!!! I couldn't save your tasks: " + e.getMessage());
+            ui.showError("I couldn't save your tasks: " + e.getMessage());
         }
     }
 
@@ -190,8 +159,8 @@ public class Nova {
         try {
             lines = Files.readAllLines(DATA_FILE);
         } catch (IOException e) {
-            printBlock(" OOPS!!! I couldn't read " + DATA_FILE + ": " + e.getMessage(),
-                    " Starting with an empty task list.");
+            ui.showError("I couldn't read " + DATA_FILE + ": " + e.getMessage()
+                    + " Starting with an empty task list.");
             return tasks;
         }
 
@@ -208,8 +177,7 @@ public class Nova {
         }
 
         if (skipped > 0) {
-            printBlock(" Heads up: I skipped " + skipped + " unreadable line(s) in " + DATA_FILE + ".",
-                    " The rest of your tasks loaded fine.");
+            ui.showLoadingError(skipped);
         }
         return tasks;
     }
@@ -217,7 +185,7 @@ public class Nova {
     /**
      * Rebuilds a single task from its save-file line.
      *
-     * @param line one line of the save file, e.g. {@code D | 0 | return book | June 6th}
+     * @param line one line of the save file, e.g. {@code D | 0 | return book | 2019-06-06T00:00}
      * @return the reconstructed task
      * @throws NovaException if the line does not match the expected format
      */
@@ -277,23 +245,6 @@ public class Nova {
                 throw new NovaException("Field " + (i + 1) + " is empty.");
             }
         }
-    }
-
-    /** Prints the given messages between the usual divider lines. */
-    private static void printBlock(String... messages) {
-        System.out.println(LINE);
-        for (String message : messages) {
-            System.out.println(message);
-        }
-        System.out.println(LINE);
-    }
-
-    private static void printAdded(ArrayList<Task> tasks) {
-        System.out.println(LINE);
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + tasks.get(tasks.size() - 1));
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-        System.out.println(LINE);
     }
 
     private static int parseIndex(String input, Command command, int count) throws NovaException {
