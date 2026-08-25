@@ -21,6 +21,10 @@ import nova.task.Todo;
  */
 public class Parser {
 
+    /** Utility class: not meant to be instantiated. */
+    private Parser() {
+    }
+
     /**
      * Parses a full line of user input.
      *

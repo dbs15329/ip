@@ -18,6 +18,10 @@ public class Ui {
 
     private final Scanner scanner = new Scanner(System.in);
 
+    /** Creates a user interface that reads from and writes to the console. */
+    public Ui() {
+    }
+
     /**
      * Reads the next command typed by the user.
      *

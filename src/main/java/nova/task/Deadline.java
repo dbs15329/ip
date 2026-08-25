@@ -5,9 +5,19 @@ import java.time.LocalDateTime;
 
 import nova.DateTimes;
 
+/**
+ * A task that has to be finished by a particular moment.
+ */
 public class Deadline extends Task {
+    /** When the task is due. Midnight means the user gave only a date. */
     protected LocalDateTime by;
 
+    /**
+     * Creates a deadline that is not done yet.
+     *
+     * @param description what the user called this task
+     * @param by          when it is due
+     */
     public Deadline(String description, LocalDateTime by) {
         super(description);
         this.by = by;

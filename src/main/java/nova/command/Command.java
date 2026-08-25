@@ -8,12 +8,16 @@ import nova.Ui;
 /**
  * A single instruction from the user, ready to be carried out.
  *
- * <p>Parsing and execution are deliberately separated: {@link Parser} turns a
+ * <p>Parsing and execution are deliberately separated: {@link nova.Parser} turns a
  * line of text into the right subclass of this class, and the main loop only
  * has to call {@link #execute}. Adding a new command therefore means adding a
  * class rather than another branch in a growing switch.
  */
 public abstract class Command {
+
+    /** Restricts construction to subclasses. */
+    protected Command() {
+    }
 
     /**
      * Carries out this command.
