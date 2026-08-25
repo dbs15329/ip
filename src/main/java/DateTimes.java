@@ -69,6 +69,28 @@ public final class DateTimes {
     }
 
     /**
+     * Parses user input into a plain date, ignoring any time of day that was
+     * supplied.
+     *
+     * @param input text such as {@code 2019-12-02} or {@code 2/12/2019}
+     * @return the parsed date
+     * @throws NovaException if the text matches none of the accepted formats
+     */
+    public static LocalDate parseDate(String input) throws NovaException {
+        return parse(input).toLocalDate();
+    }
+
+    /**
+     * Formats a plain date for display.
+     *
+     * @param date the value to format
+     * @return text such as {@code Dec 02 2019}
+     */
+    public static String formatDate(LocalDate date) {
+        return date.format(DISPLAY_DATE);
+    }
+
+    /**
      * Formats a date and time for display, omitting the time when it is
      * midnight.
      *

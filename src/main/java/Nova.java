@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -111,6 +112,28 @@ public class Nova {
                         tasks.add(new Event(parts[0], DateTimes.parse(parts[1]), DateTimes.parse(parts[2])));
                         save(tasks);
                         printAdded(tasks);
+                        break;
+                    }
+
+                    case ON: {
+                        String arg = input.substring(2).trim();
+                        if (arg.isEmpty()) {
+                            throw new NovaException("Tell me which date to look up, e.g. on 2019-12-02.");
+                        }
+                        LocalDate date = DateTimes.parseDate(arg);
+                        System.out.println(LINE);
+                        System.out.println(" Here is what you have on " + DateTimes.formatDate(date) + ":");
+                        int shown = 0;
+                        for (Task task : tasks) {
+                            if (task.isOn(date)) {
+                                shown++;
+                                System.out.println(" " + shown + "." + task);
+                            }
+                        }
+                        if (shown == 0) {
+                            System.out.println(" Nothing scheduled. Enjoy the day!");
+                        }
+                        System.out.println(LINE);
                         break;
                     }
 

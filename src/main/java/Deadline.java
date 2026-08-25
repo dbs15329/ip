@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Deadline extends Task {
@@ -8,6 +9,17 @@ public class Deadline extends Task {
         this.by = by;
     }
 
+
+    /**
+     * Returns whether this deadline is due on the given date.
+     *
+     * @param date the date to test against
+     * @return true if the deadline falls on that date
+     */
+    @Override
+    public boolean isOn(LocalDate date) {
+        return by.toLocalDate().equals(date);
+    }
 
     @Override
     public String toFileString() {
