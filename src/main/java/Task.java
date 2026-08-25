@@ -19,6 +19,14 @@ public class Task {
         this.isDone = false;
     }
 
+    /**
+     * Returns the part of the save-file line shared by every task type,
+     * i.e. the done flag followed by the description.
+     */
+    public String toFileString() {
+        return (isDone ? "1" : "0") + " | " + description;
+    }
+
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;
