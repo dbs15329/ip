@@ -16,12 +16,13 @@ public class Nova {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
 
         System.out.println(LINE);
         System.out.println(" Hello! I'm Nova");
         System.out.println(" What can I do for you?");
         System.out.println(LINE);
+
+        ArrayList<Task> tasks = load();
 
         while (true) {
             String input = sc.nextLine().trim();
@@ -143,10 +144,125 @@ public class Nova {
             }
             Files.write(DATA_FILE, lines);
         } catch (IOException e) {
-            System.out.println(LINE);
-            System.out.println(" OOPS!!! I couldn't save your tasks: " + e.getMessage());
-            System.out.println(LINE);
+            printBlock(" OOPS!!! I couldn't save your tasks: " + e.getMessage());
         }
+    }
+
+    /**
+     * Reads the task list back from the save file.
+     *
+     * <p>A missing file is not an error: it simply means this is the first
+     * run on this machine. Lines that cannot be understood are skipped so
+     * that one damaged line does not cost the user the rest of the list.
+     *
+     * @return the tasks recovered from disk, or an empty list if there are none
+     */
+    private static ArrayList<Task> load() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        if (!Files.exists(DATA_FILE)) {
+            return tasks;
+        }
+
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(DATA_FILE);
+        } catch (IOException e) {
+            printBlock(" OOPS!!! I couldn't read " + DATA_FILE + ": " + e.getMessage(),
+                    " Starting with an empty task list.");
+            return tasks;
+        }
+
+        int skipped = 0;
+        for (String line : lines) {
+            if (line.isBlank()) {
+                continue;
+            }
+            try {
+                tasks.add(parseSavedTask(line));
+            } catch (NovaException e) {
+                skipped++;
+            }
+        }
+
+        if (skipped > 0) {
+            printBlock(" Heads up: I skipped " + skipped + " unreadable line(s) in " + DATA_FILE + ".",
+                    " The rest of your tasks loaded fine.");
+        }
+        return tasks;
+    }
+
+    /**
+     * Rebuilds a single task from its save-file line.
+     *
+     * @param line one line of the save file, e.g. {@code D | 0 | return book | June 6th}
+     * @return the reconstructed task
+     * @throws NovaException if the line does not match the expected format
+     */
+    private static Task parseSavedTask(String line) throws NovaException {
+        String[] parts = line.split(" \\| ", -1);
+        if (parts.length < 3) {
+            throw new NovaException("Line has too few fields.");
+        }
+
+        String doneFlag = parts[1];
+        if (!doneFlag.equals("0") && !doneFlag.equals("1")) {
+            throw new NovaException("Done flag must be 0 or 1.");
+        }
+
+        String description = parts[2];
+        if (description.isBlank()) {
+            throw new NovaException("Description is empty.");
+        }
+
+        Task task;
+        switch (parts[0]) {
+            case "T":
+                requireFieldCount(parts, 3);
+                task = new Todo(description);
+                break;
+
+            case "D":
+                requireFieldCount(parts, 4);
+                task = new Deadline(description, parts[3]);
+                break;
+
+            case "E":
+                requireFieldCount(parts, 5);
+                task = new Event(description, parts[3], parts[4]);
+                break;
+
+            default:
+                throw new NovaException("Unknown task type '" + parts[0] + "'.");
+        }
+
+        if (doneFlag.equals("1")) {
+            task.markAsDone();
+        }
+        return task;
+    }
+
+    /**
+     * Checks that a save-file line has exactly the expected number of fields
+     * and that none of the trailing fields is blank.
+     */
+    private static void requireFieldCount(String[] parts, int expected) throws NovaException {
+        if (parts.length != expected) {
+            throw new NovaException("Expected " + expected + " fields but found " + parts.length + ".");
+        }
+        for (int i = 3; i < parts.length; i++) {
+            if (parts[i].isBlank()) {
+                throw new NovaException("Field " + (i + 1) + " is empty.");
+            }
+        }
+    }
+
+    /** Prints the given messages between the usual divider lines. */
+    private static void printBlock(String... messages) {
+        System.out.println(LINE);
+        for (String message : messages) {
+            System.out.println(message);
+        }
+        System.out.println(LINE);
     }
 
     private static void printAdded(ArrayList<Task> tasks) {
