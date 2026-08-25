@@ -1,3 +1,7 @@
+package nova;
+
+import nova.command.Command;
+
 /**
  * A command-line chatbot that keeps track of todos, deadlines and events.
  *
