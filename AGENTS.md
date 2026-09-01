@@ -47,6 +47,11 @@ that come up most often here:
 * Fields get the smallest scope that works, and are `final` when they do not
   change.
 
+Checkstyle enforces these rules, configured in `config/checkstyle/`. It runs as
+part of `./gradlew build`; run it alone with
+`./gradlew checkstyleMain checkstyleTest`. Fix violations rather than
+suppressing them, unless the rule genuinely does not fit this project.
+
 ## Testing
 
 JUnit 5 tests live under `src/test/java`, mirroring the package of the class
