@@ -20,6 +20,32 @@ checkstyle {
 
 dependencies {
     String jUnitVersion = '5.14.4'
+    String javaFxVersion = '17.0.7'
+
+    // Every platform's JavaFX binaries are pulled in, so that the fat JAR built
+    // on one machine still runs on the others. The tutorial lists win, mac and
+    // linux; the aarch64 classifiers are added because Apple silicon and ARM
+    // Linux need their own natives.
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:mac-aarch64")
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-base:${javaFxVersion}:linux-aarch64")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:mac-aarch64")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-controls:${javaFxVersion}:linux-aarch64")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:mac-aarch64")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:linux-aarch64")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:win")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:mac")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:mac-aarch64")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:linux")
+    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:linux-aarch64")
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
 
@@ -42,7 +68,7 @@ test {
 }
 
 application {
-    mainClass = 'nova.Nova'
+    mainClass = 'nova.Launcher'
 }
 
 jar {
