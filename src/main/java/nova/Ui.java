@@ -6,19 +6,20 @@ import java.util.Scanner;
 import nova.task.Task;
 
 /**
- * Handles everything the chatbot shows the user and everything it reads back.
+ * Builds everything the chatbot says to the user, and reads what they type
+ * back.
  *
- * <p>Keeping console input and output in one place means the rest of the code
- * never touches {@code System.out} directly, so the wording of a message can
- * be changed, or the console swapped for another interface, without touching
- * the task-handling logic.
+ * <p>Messages are collected into a buffer rather than printed. Whoever is
+ * driving the chatbot calls {@link #flush()} once the current command is done
+ * and decides how to present the text: the console front end frames it with
+ * divider lines, while the GUI puts it in a dialog bubble. That is what lets
+ * both front ends share one set of messages.
  */
 public class Ui {
-    private static final String LINE = "____________________________________________________________";
-
     private final Scanner scanner = new Scanner(System.in);
+    private final StringBuilder buffer = new StringBuilder();
 
-    /** Creates a user interface that reads from and writes to the console. */
+    /** Creates a user interface that reads from the console. */
     public Ui() {
     }
 
@@ -36,19 +37,26 @@ public class Ui {
         scanner.close();
     }
 
-    /** Prints the divider line used to frame every block of output. */
-    public void showLine() {
-        System.out.println(LINE);
+    /**
+     * Returns everything said since the last call, and empties the buffer.
+     *
+     * @return the accumulated message, without a trailing line separator
+     */
+    public String flush() {
+        String message = buffer.toString();
+        buffer.setLength(0);
+        return message.stripTrailing();
     }
 
     /** Greets the user on startup. */
     public void showWelcome() {
-        showBlock(" Hello! I'm Nova", " What can I do for you?");
+        addLine(" Hello! I'm Nova");
+        addLine(" What can I do for you?");
     }
 
     /** Says goodbye just before the chatbot exits. */
     public void showGoodbye() {
-        showBlock(" Bye. Hope to see you again soon!");
+        addLine(" Bye. Hope to see you again soon!");
     }
 
     /**
@@ -57,7 +65,7 @@ public class Ui {
      * @param message the explanation to show
      */
     public void showError(String message) {
-        showBlock(" OOPS!!! " + message);
+        addLine(" OOPS!!! " + message);
     }
 
     /**
@@ -66,12 +74,8 @@ public class Ui {
      * @param tasks the tasks to list
      */
     public void showTaskList(List<Task> tasks) {
-        showLine();
-        System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i));
-        }
-        showLine();
+        addLine(" Here are the tasks in your list:");
+        addNumbered(tasks);
     }
 
     /**
@@ -81,9 +85,9 @@ public class Ui {
      * @param total the number of tasks now in the list
      */
     public void showAdded(Task task, int total) {
-        showBlock(" Got it. I've added this task:",
-                "   " + task,
-                " Now you have " + total + " tasks in the list.");
+        addLine(" Got it. I've added this task:");
+        addLine("   " + task);
+        addLine(" Now you have " + total + " tasks in the list.");
     }
 
     /**
@@ -93,9 +97,9 @@ public class Ui {
      * @param remaining the number of tasks left in the list
      */
     public void showRemoved(Task task, int remaining) {
-        showBlock(" Noted. I've removed this task:",
-                "   " + task,
-                " Now you have " + remaining + " tasks in the list.");
+        addLine(" Noted. I've removed this task:");
+        addLine("   " + task);
+        addLine(" Now you have " + remaining + " tasks in the list.");
     }
 
     /**
@@ -104,7 +108,8 @@ public class Ui {
      * @param task the task just marked
      */
     public void showMarked(Task task) {
-        showBlock(" Nice! I've marked this task as done:", "   " + task);
+        addLine(" Nice! I've marked this task as done:");
+        addLine("   " + task);
     }
 
     /**
@@ -113,7 +118,8 @@ public class Ui {
      * @param task the task just unmarked
      */
     public void showUnmarked(Task task) {
-        showBlock(" OK, I've marked this task as not done yet:", "   " + task);
+        addLine(" OK, I've marked this task as not done yet:");
+        addLine("   " + task);
     }
 
     /**
@@ -123,15 +129,11 @@ public class Ui {
      * @param matches  the tasks that fall on that date
      */
     public void showTasksOn(String dateText, List<Task> matches) {
-        showLine();
-        System.out.println(" Here is what you have on " + dateText + ":");
+        addLine(" Here is what you have on " + dateText + ":");
         if (matches.isEmpty()) {
-            System.out.println(" Nothing scheduled. Enjoy the day!");
+            addLine(" Nothing scheduled. Enjoy the day!");
         }
-        for (int i = 0; i < matches.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + matches.get(i));
-        }
-        showLine();
+        addNumbered(matches);
     }
 
     /**
@@ -140,15 +142,11 @@ public class Ui {
      * @param matches the tasks whose description contains the keyword
      */
     public void showMatchingTasks(List<Task> matches) {
-        showLine();
-        System.out.println(" Here are the matching tasks in your list:");
+        addLine(" Here are the matching tasks in your list:");
         if (matches.isEmpty()) {
-            System.out.println(" No matching tasks found.");
+            addLine(" No matching tasks found.");
         }
-        for (int i = 0; i < matches.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + matches.get(i));
-        }
-        showLine();
+        addNumbered(matches);
     }
 
     /**
@@ -157,16 +155,19 @@ public class Ui {
      * @param skipped how many lines had to be discarded
      */
     public void showLoadingError(int skipped) {
-        showBlock(" Heads up: I skipped " + skipped + " unreadable line(s) in the save file.",
-                " The rest of your tasks loaded fine.");
+        addLine(" Heads up: I skipped " + skipped + " unreadable line(s) in the save file.");
+        addLine(" The rest of your tasks loaded fine.");
     }
 
-    /** Prints the given lines framed by divider lines. */
-    private void showBlock(String... messages) {
-        showLine();
-        for (String message : messages) {
-            System.out.println(message);
+    /** Appends the given tasks, numbered from one. */
+    private void addNumbered(List<Task> tasks) {
+        for (int i = 0; i < tasks.size(); i++) {
+            addLine(" " + (i + 1) + "." + tasks.get(i));
         }
-        showLine();
+    }
+
+    /** Appends one line to the message being built. */
+    private void addLine(String line) {
+        buffer.append(line).append(System.lineSeparator());
     }
 }
