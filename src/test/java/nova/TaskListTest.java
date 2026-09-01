@@ -28,8 +28,7 @@ public class TaskListTest {
     @Test
     public void add_severalTasks_keptInOrder() {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("first"));
-        tasks.add(new Todo("second"));
+        tasks.add(new Todo("first"), new Todo("second"));
 
         assertEquals(2, tasks.size());
         assertEquals("[T][ ] first", tasks.get(0).toString());
@@ -37,11 +36,33 @@ public class TaskListTest {
     }
 
     @Test
-    public void remove_middleTask_returnsItAndClosesTheGap() {
+    public void add_severalTasksAtOnce_sameAsAddingThemOneByOne() {
+        TaskList atOnce = new TaskList();
+        atOnce.add(new Todo("first"), new Todo("second"));
+
+        TaskList oneByOne = new TaskList();
+        oneByOne.add(new Todo("first"));
+        oneByOne.add(new Todo("second"));
+
+        assertEquals(oneByOne.size(), atOnce.size());
+        assertEquals(oneByOne.get(0).toString(), atOnce.get(0).toString());
+        assertEquals(oneByOne.get(1).toString(), atOnce.get(1).toString());
+    }
+
+    @Test
+    public void add_noTasks_listUnchanged() {
         TaskList tasks = new TaskList();
         tasks.add(new Todo("first"));
-        tasks.add(new Todo("second"));
-        tasks.add(new Todo("third"));
+
+        tasks.add();
+
+        assertEquals(1, tasks.size());
+    }
+
+    @Test
+    public void remove_middleTask_returnsItAndClosesTheGap() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("first"), new Todo("second"), new Todo("third"));
 
         Task removed = tasks.remove(1);
 
@@ -75,10 +96,10 @@ public class TaskListTest {
     @Test
     public void getTasksOn_mixedTaskTypes_returnsOnlyMatchesInOrder() {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("no date"));
-        tasks.add(new Deadline("due that day", AUG_6_2PM));
-        tasks.add(new Deadline("due later", AUG_8_4PM));
-        tasks.add(new Event("spans the day", AUG_6_2PM, AUG_8_4PM));
+        tasks.add(new Todo("no date"),
+                new Deadline("due that day", AUG_6_2PM),
+                new Deadline("due later", AUG_8_4PM),
+                new Event("spans the day", AUG_6_2PM, AUG_8_4PM));
 
         List<Task> matches = tasks.getTasksOn(LocalDate.of(2019, 8, 6));
 
@@ -90,8 +111,8 @@ public class TaskListTest {
     @Test
     public void getTasksOn_dayInsideEventSpanOnly_returnsTheEvent() {
         TaskList tasks = new TaskList();
-        tasks.add(new Deadline("due elsewhere", AUG_6_2PM));
-        tasks.add(new Event("spans the day", AUG_6_2PM, AUG_8_4PM));
+        tasks.add(new Deadline("due elsewhere", AUG_6_2PM),
+                new Event("spans the day", AUG_6_2PM, AUG_8_4PM));
 
         List<Task> matches = tasks.getTasksOn(LocalDate.of(2019, 8, 7));
 
@@ -110,9 +131,9 @@ public class TaskListTest {
     @Test
     public void find_keywordInSomeDescriptions_returnsOnlyThoseInOrder() {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("read book"));
-        tasks.add(new Todo("buy milk"));
-        tasks.add(new Deadline("return book", AUG_6_2PM));
+        tasks.add(new Todo("read book"),
+                new Todo("buy milk"),
+                new Deadline("return book", AUG_6_2PM));
 
         List<Task> matches = tasks.find("book");
 
