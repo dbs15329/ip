@@ -50,13 +50,13 @@ public class Ui {
 
     /** Greets the user on startup. */
     public void showWelcome() {
-        addLine(" Hello! I'm Nova");
-        addLine(" What can I do for you?");
+        addLines(" Hello! I'm Nova",
+                " What can I do for you?");
     }
 
     /** Says goodbye just before the chatbot exits. */
     public void showGoodbye() {
-        addLine(" Bye. Hope to see you again soon!");
+        addLines(" Bye. Hope to see you again soon!");
     }
 
     /**
@@ -65,7 +65,7 @@ public class Ui {
      * @param message the explanation to show
      */
     public void showError(String message) {
-        addLine(" OOPS!!! " + message);
+        addLines(" OOPS!!! " + message);
     }
 
     /**
@@ -74,7 +74,7 @@ public class Ui {
      * @param tasks the tasks to list
      */
     public void showTaskList(List<Task> tasks) {
-        addLine(" Here are the tasks in your list:");
+        addLines(" Here are the tasks in your list:");
         addNumbered(tasks);
     }
 
@@ -85,9 +85,9 @@ public class Ui {
      * @param total the number of tasks now in the list
      */
     public void showAdded(Task task, int total) {
-        addLine(" Got it. I've added this task:");
-        addLine("   " + task);
-        addLine(" Now you have " + total + " tasks in the list.");
+        addLines(" Got it. I've added this task:",
+                "   " + task,
+                " Now you have " + total + " tasks in the list.");
     }
 
     /**
@@ -97,9 +97,9 @@ public class Ui {
      * @param remaining the number of tasks left in the list
      */
     public void showRemoved(Task task, int remaining) {
-        addLine(" Noted. I've removed this task:");
-        addLine("   " + task);
-        addLine(" Now you have " + remaining + " tasks in the list.");
+        addLines(" Noted. I've removed this task:",
+                "   " + task,
+                " Now you have " + remaining + " tasks in the list.");
     }
 
     /**
@@ -108,8 +108,8 @@ public class Ui {
      * @param task the task just marked
      */
     public void showMarked(Task task) {
-        addLine(" Nice! I've marked this task as done:");
-        addLine("   " + task);
+        addLines(" Nice! I've marked this task as done:",
+                "   " + task);
     }
 
     /**
@@ -118,8 +118,8 @@ public class Ui {
      * @param task the task just unmarked
      */
     public void showUnmarked(Task task) {
-        addLine(" OK, I've marked this task as not done yet:");
-        addLine("   " + task);
+        addLines(" OK, I've marked this task as not done yet:",
+                "   " + task);
     }
 
     /**
@@ -129,9 +129,9 @@ public class Ui {
      * @param matches  the tasks that fall on that date
      */
     public void showTasksOn(String dateText, List<Task> matches) {
-        addLine(" Here is what you have on " + dateText + ":");
+        addLines(" Here is what you have on " + dateText + ":");
         if (matches.isEmpty()) {
-            addLine(" Nothing scheduled. Enjoy the day!");
+            addLines(" Nothing scheduled. Enjoy the day!");
         }
         addNumbered(matches);
     }
@@ -142,9 +142,9 @@ public class Ui {
      * @param matches the tasks whose description contains the keyword
      */
     public void showMatchingTasks(List<Task> matches) {
-        addLine(" Here are the matching tasks in your list:");
+        addLines(" Here are the matching tasks in your list:");
         if (matches.isEmpty()) {
-            addLine(" No matching tasks found.");
+            addLines(" No matching tasks found.");
         }
         addNumbered(matches);
     }
@@ -155,19 +155,25 @@ public class Ui {
      * @param skipped how many lines had to be discarded
      */
     public void showLoadingError(int skipped) {
-        addLine(" Heads up: I skipped " + skipped + " unreadable line(s) in the save file.");
-        addLine(" The rest of your tasks loaded fine.");
+        addLines(" Heads up: I skipped " + skipped + " unreadable line(s) in the save file.",
+                " The rest of your tasks loaded fine.");
     }
 
     /** Appends the given tasks, numbered from one. */
     private void addNumbered(List<Task> tasks) {
         for (int i = 0; i < tasks.size(); i++) {
-            addLine(" " + (i + 1) + "." + tasks.get(i));
+            addLines(" " + (i + 1) + "." + tasks.get(i));
         }
     }
 
-    /** Appends one line to the message being built. */
-    private void addLine(String line) {
-        buffer.append(line).append(System.lineSeparator());
+    /**
+     * Appends lines to the message being built.
+     *
+     * @param lines the lines to add, in order
+     */
+    private void addLines(String... lines) {
+        for (String line : lines) {
+            buffer.append(line).append(System.lineSeparator());
+        }
     }
 }
