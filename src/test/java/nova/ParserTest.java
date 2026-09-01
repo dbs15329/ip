@@ -77,8 +77,8 @@ public class ParserTest {
 
     @Test
     public void parse_eventMissingTo_exceptionThrown() {
-        NovaException e = assertThrows(NovaException.class,
-                () -> Parser.parse("event meeting /from 2019-08-06 1400"));
+        NovaException e = assertThrows(
+                NovaException.class, () -> Parser.parse("event meeting /from 2019-08-06 1400"));
         assertEquals("An event needs a description, a /from time and a /to time.", e.getMessage());
     }
 
