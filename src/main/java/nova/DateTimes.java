@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Converts between the date-time text a user types, the text shown back to
@@ -40,8 +43,15 @@ public final class DateTimes {
 
     private static final DateTimeFormatter DISPLAY_DATE =
             DateTimeFormatter.ofPattern("MMM dd yyyy");
-    private static final DateTimeFormatter DISPLAY_DATE_TIME =
-            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma");
+    /**
+     * Display format for a date with a time of day. Java has no pattern letter
+     * for a lowercase am/pm, so the marker is supplied as explicit text rather
+     * than uppercased by the formatter and lowercased again afterwards.
+     */
+    private static final DateTimeFormatter DISPLAY_DATE_TIME = new DateTimeFormatterBuilder()
+            .appendPattern("MMM dd yyyy, h:mm")
+            .appendText(ChronoField.AMPM_OF_DAY, Map.of(0L, "am", 1L, "pm"))
+            .toFormatter();
 
     /** Utility class: not meant to be instantiated. */
     private DateTimes() {
@@ -115,7 +125,7 @@ public final class DateTimes {
         if (dateTime.toLocalTime().equals(LocalTime.MIDNIGHT)) {
             return dateTime.format(DISPLAY_DATE);
         }
-        return dateTime.format(DISPLAY_DATE_TIME).replace("AM", "am").replace("PM", "pm");
+        return dateTime.format(DISPLAY_DATE_TIME);
     }
 
     /**
