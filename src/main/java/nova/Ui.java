@@ -1,13 +1,11 @@
 package nova;
 
 import java.util.List;
-import java.util.Scanner;
 
 import nova.task.Task;
 
 /**
- * Builds everything the chatbot says to the user, and reads what they type
- * back.
+ * Builds everything the chatbot says to the user.
  *
  * <p>Messages are collected into a buffer rather than printed. Whoever is
  * driving the chatbot calls {@link #flush()} once the current command is done
@@ -16,25 +14,10 @@ import nova.task.Task;
  * both front ends share one set of messages.
  */
 public class Ui {
-    private final Scanner scanner = new Scanner(System.in);
     private final StringBuilder buffer = new StringBuilder();
 
-    /** Creates a user interface that reads from the console. */
+    /** Creates a source of chatbot messages. */
     public Ui() {
-    }
-
-    /**
-     * Reads the next command typed by the user.
-     *
-     * @return the trimmed line of input
-     */
-    public String readCommand() {
-        return scanner.nextLine().trim();
-    }
-
-    /** Releases the input stream once the chatbot is shutting down. */
-    public void close() {
-        scanner.close();
     }
 
     /**
