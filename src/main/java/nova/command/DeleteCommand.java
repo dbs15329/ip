@@ -1,7 +1,6 @@
 package nova.command;
 
 import nova.NovaException;
-import nova.Parser;
 import nova.Storage;
 import nova.TaskList;
 import nova.Ui;
@@ -22,7 +21,7 @@ public class DeleteCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws NovaException {
-        Parser.checkIndexInRange(index, tasks.size());
+        tasks.checkIndexInRange(index);
         Task removed = tasks.remove(index);
         storage.save(tasks.asList());
         ui.showRemoved(removed, tasks.size());

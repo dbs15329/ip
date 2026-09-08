@@ -83,22 +83,6 @@ public class Parser {
         }
     }
 
-    /**
-     * Checks that a task number refers to a task that actually exists.
-     *
-     * <p>This cannot be done while parsing, because the parser does not know
-     * how long the list is; it is checked when the command runs.
-     *
-     * @param index zero-based position the user asked for
-     * @param count number of tasks currently in the list
-     * @throws NovaException if there is no task at that position
-     */
-    public static void checkIndexInRange(int index, int count) throws NovaException {
-        if (index < 0 || index >= count) {
-            throw new NovaException("There is no task number " + (index + 1) + " in your list.");
-        }
-    }
-
     /** Reads the task number that follows a mark, unmark or delete keyword. */
     private static int parseIndex(String arguments, CommandType type) throws NovaException {
         if (arguments.isEmpty()) {

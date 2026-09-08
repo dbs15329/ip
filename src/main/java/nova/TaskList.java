@@ -104,6 +104,18 @@ public class TaskList {
     }
 
     /**
+     * Checks that the given position addresses a task that actually exists.
+     *
+     * @param index zero-based position the user asked for
+     * @throws NovaException if there is no task at that position
+     */
+    public void checkIndexInRange(int index) throws NovaException {
+        if (index < 0 || index >= tasks.size()) {
+            throw new NovaException("There is no task number " + (index + 1) + " in your list.");
+        }
+    }
+
+    /**
      * Returns the tasks as an unmodifiable list, for display and for saving.
      *
      * @return a read-only view of the tasks

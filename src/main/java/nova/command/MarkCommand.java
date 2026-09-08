@@ -1,7 +1,6 @@
 package nova.command;
 
 import nova.NovaException;
-import nova.Parser;
 import nova.Storage;
 import nova.TaskList;
 import nova.Ui;
@@ -25,7 +24,7 @@ public class MarkCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws NovaException {
-        Parser.checkIndexInRange(index, tasks.size());
+        tasks.checkIndexInRange(index);
         Task task = tasks.get(index);
 
         if (isDone) {
