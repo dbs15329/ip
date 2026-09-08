@@ -38,6 +38,9 @@ public class TaskList {
      * @param tasksToAdd the tasks to add
      */
     public void add(Task... tasksToAdd) {
+        for (Task task : tasksToAdd) {
+            assert task != null : "a null task would break every later read of the list";
+        }
         Collections.addAll(tasks, tasksToAdd);
     }
 
@@ -48,6 +51,7 @@ public class TaskList {
      * @return the task that was removed
      */
     public Task remove(int index) {
+        assert isInRange(index) : "index " + index + " out of range for a list of " + tasks.size();
         return tasks.remove(index);
     }
 
@@ -58,6 +62,7 @@ public class TaskList {
      * @return the task at that position
      */
     public Task get(int index) {
+        assert isInRange(index) : "index " + index + " out of range for a list of " + tasks.size();
         return tasks.get(index);
     }
 
@@ -110,5 +115,10 @@ public class TaskList {
      */
     public List<Task> asList() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    /** Returns whether the given index addresses a task that exists. */
+    private boolean isInRange(int index) {
+        return index >= 0 && index < tasks.size();
     }
 }
