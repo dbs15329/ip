@@ -23,6 +23,8 @@ public class Task {
      * @param description what the user called this task
      */
     public Task(String description) {
+        assert description != null && !description.isBlank()
+                : "Parser rejects empty descriptions, so one should never reach here";
         this.description = description;
         this.isDone = false;
     }

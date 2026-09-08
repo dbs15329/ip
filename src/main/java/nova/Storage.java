@@ -83,6 +83,8 @@ public class Storage {
                 skippedLineCount++;
             }
         }
+        assert tasks.size() + skippedLineCount == taskLines.size()
+                : "every non-blank line should be either loaded or counted as skipped";
         return tasks;
     }
 
