@@ -94,6 +94,21 @@ public class TaskTest {
     }
 
     @Test
+    public void getScheduledTime_todo_empty() {
+        assertTrue(new Todo("read book").getScheduledTime().isEmpty());
+    }
+
+    @Test
+    public void getScheduledTime_deadline_isTheDueMoment() {
+        assertEquals(DEC_2_6PM, new Deadline("return book", DEC_2_6PM).getScheduledTime().orElseThrow());
+    }
+
+    @Test
+    public void getScheduledTime_event_isTheStartMoment() {
+        assertEquals(AUG_6_2PM, new Event("trip", AUG_6_2PM, AUG_8_4PM).getScheduledTime().orElseThrow());
+    }
+
+    @Test
     public void isOn_todo_alwaysFalse() {
         assertFalse(new Todo("read book").isOn(LocalDate.of(2019, 12, 2)));
     }

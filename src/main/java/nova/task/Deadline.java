@@ -2,6 +2,7 @@ package nova.task;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import nova.DateTimes;
 
@@ -33,6 +34,16 @@ public class Deadline extends Task {
     @Override
     public boolean isOn(LocalDate date) {
         return by.toLocalDate().equals(date);
+    }
+
+    /**
+     * Returns when this deadline is due, which is the moment it sorts by.
+     *
+     * @return the due date and time
+     */
+    @Override
+    public Optional<LocalDateTime> getScheduledTime() {
+        return Optional.of(by);
     }
 
     @Override

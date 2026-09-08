@@ -194,6 +194,67 @@ public class TaskListTest {
         assertThrows(NovaException.class, () -> new TaskList().checkIndexInRange(0));
     }
 
+    @Test
+    public void sort_mixedTasks_datedFirstInTimeOrderThenUndated() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("zebra"),
+                new Deadline("later", AUG_8_4PM),
+                new Todo("apple"),
+                new Event("earlier", AUG_6_2PM, AUG_8_4PM));
+
+        tasks.sort();
+
+        assertEquals("earlier", tasks.get(0).getDescription());
+        assertEquals("later", tasks.get(1).getDescription());
+        assertEquals("apple", tasks.get(2).getDescription());
+        assertEquals("zebra", tasks.get(3).getDescription());
+    }
+
+    @Test
+    public void sort_eventsOrderedByStartNotEnd() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Event("starts later", AUG_8_4PM, AUG_8_4PM),
+                new Event("starts earlier", AUG_6_2PM, AUG_8_4PM));
+
+        tasks.sort();
+
+        assertEquals("starts earlier", tasks.get(0).getDescription());
+    }
+
+    @Test
+    public void sort_sameMoment_ordersByDescriptionIgnoringCase() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Deadline("banana", AUG_6_2PM),
+                new Deadline("Apple", AUG_6_2PM));
+
+        tasks.sort();
+
+        assertEquals("Apple", tasks.get(0).getDescription());
+        assertEquals("banana", tasks.get(1).getDescription());
+    }
+
+    @Test
+    public void sort_calledTwice_orderUnchanged() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("zebra"), new Deadline("due", AUG_6_2PM), new Todo("apple"));
+
+        tasks.sort();
+        List<String> afterFirst = tasks.asList().stream().map(Task::getDescription).toList();
+        tasks.sort();
+        List<String> afterSecond = tasks.asList().stream().map(Task::getDescription).toList();
+
+        assertEquals(afterFirst, afterSecond);
+    }
+
+    @Test
+    public void sort_emptyList_staysEmpty() {
+        TaskList tasks = new TaskList();
+
+        tasks.sort();
+
+        assertEquals(0, tasks.size());
+    }
+
     /** Pulls the description out of a task's save-file line, for readable assertions. */
     private static String matchDescription(Task task) {
         return task.toFileString().split(" \\| ", -1)[2];

@@ -16,6 +16,7 @@ import nova.command.FindCommand;
 import nova.command.ListCommand;
 import nova.command.MarkCommand;
 import nova.command.OnCommand;
+import nova.command.SortCommand;
 
 public class ParserTest {
 
@@ -124,6 +125,17 @@ public class ParserTest {
     public void parse_findWithoutKeyword_exceptionThrown() {
         NovaException e = assertThrows(NovaException.class, () -> Parser.parse("find"));
         assertEquals("Tell me what to search for, e.g. find book.", e.getMessage());
+    }
+
+    @Test
+    public void parse_sortAlone_returnsSortCommand() throws NovaException {
+        assertInstanceOf(SortCommand.class, Parser.parse("sort"));
+    }
+
+    @Test
+    public void parse_sortWithArguments_exceptionThrown() {
+        NovaException e = assertThrows(NovaException.class, () -> Parser.parse("sort by date"));
+        assertEquals("Just 'sort' on its own will do.", e.getMessage());
     }
 
     @Test

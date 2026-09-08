@@ -9,6 +9,7 @@ import nova.command.FindCommand;
 import nova.command.ListCommand;
 import nova.command.MarkCommand;
 import nova.command.OnCommand;
+import nova.command.SortCommand;
 import nova.task.Deadline;
 import nova.task.Event;
 import nova.task.Todo;
@@ -71,6 +72,12 @@ public class Parser {
                     throw new NovaException("Tell me what to search for, e.g. find book.");
                 }
                 return new FindCommand(arguments);
+
+            case SORT:
+                if (!arguments.isEmpty()) {
+                    throw new NovaException("Just 'sort' on its own will do.");
+                }
+                return new SortCommand();
 
             case ON:
                 if (arguments.isEmpty()) {
