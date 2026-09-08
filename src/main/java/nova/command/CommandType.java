@@ -59,6 +59,9 @@ public enum CommandType {
      * @return the arguments, trimmed, or an empty string if there were none
      */
     public String argumentsIn(String input) {
+        assert input != null : "input should never be null";
+        assert input.startsWith(keyword)
+                : "argumentsIn called with input that does not start with '" + keyword + "': " + input;
         return input.substring(keyword.length()).trim();
     }
 

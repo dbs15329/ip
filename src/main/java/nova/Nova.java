@@ -81,6 +81,7 @@ public class Nova {
      * @return the reply to show them
      */
     public String getResponse(String input) {
+        assert input != null : "input should never be null";
         try {
             Command command = Parser.parse(input);
             command.execute(tasks, ui, storage);
