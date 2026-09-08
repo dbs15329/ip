@@ -134,6 +134,20 @@ public class Ui {
     }
 
     /**
+     * Confirms that the list was reordered, and shows the new order.
+     *
+     * @param tasks the tasks in their new order
+     */
+    public void showSorted(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            addLines(" There is nothing to sort yet.");
+            return;
+        }
+        addLines(" Sorted. Here is your list, soonest first:");
+        addNumbered(tasks);
+    }
+
+    /**
      * Warns that the save file could not be read in full.
      *
      * @param skipped how many lines had to be discarded

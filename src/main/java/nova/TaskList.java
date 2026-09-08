@@ -1,8 +1,10 @@
 package nova;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import nova.task.Task;
@@ -98,6 +100,21 @@ public class TaskList {
         return tasks.stream()
                 .filter(task -> task.hasKeyword(keyword))
                 .toList();
+    }
+
+    /**
+     * Reorders the list chronologically, soonest first.
+     *
+     * <p>Undated todos have nothing to compare, so they sort after everything
+     * dated rather than being dropped or treated as due now. Tasks sharing a
+     * moment, and todos among themselves, fall back to their description so
+     * that sorting the same list twice always gives the same order.
+     */
+    public void sort() {
+        tasks.sort(Comparator
+                .comparing((Task task) -> task.getScheduledTime().isPresent() ? 0 : 1)
+                .thenComparing(task -> task.getScheduledTime().orElse(LocalDateTime.MAX))
+                .thenComparing(Task::getDescription, String.CASE_INSENSITIVE_ORDER));
     }
 
     /**

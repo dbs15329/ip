@@ -1,6 +1,8 @@
 package nova.task;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * A single thing the user wants to keep track of.
@@ -70,6 +72,28 @@ public class Task {
      */
     public boolean isOn(LocalDate date) {
         return false;
+    }
+
+    /**
+     * Returns the moment this task is scheduled for, if it has one.
+     *
+     * <p>A plain todo has no time at all, which is why this is an Optional
+     * rather than a date that has to stand in for "no date". Dated subclasses
+     * override it.
+     *
+     * @return the scheduled moment, or empty if the task is undated
+     */
+    public Optional<LocalDateTime> getScheduledTime() {
+        return Optional.empty();
+    }
+
+    /**
+     * Returns the description the user gave this task.
+     *
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
     }
 
     /**

@@ -2,6 +2,7 @@ package nova.task;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import nova.DateTimes;
 
@@ -40,6 +41,18 @@ public class Event extends Task {
     @Override
     public boolean isOn(LocalDate date) {
         return !date.isBefore(from.toLocalDate()) && !date.isAfter(to.toLocalDate());
+    }
+
+    /**
+     * Returns when this event starts, which is the moment it sorts by. The
+     * start is used rather than the end so that events appear in the order
+     * the user will encounter them.
+     *
+     * @return the start date and time
+     */
+    @Override
+    public Optional<LocalDateTime> getScheduledTime() {
+        return Optional.of(from);
     }
 
     @Override

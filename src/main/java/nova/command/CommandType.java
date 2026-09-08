@@ -35,7 +35,10 @@ public enum CommandType {
     ON("on"),
 
     /** Shows the tasks whose description contains a given keyword. */
-    FIND("find");
+    FIND("find"),
+
+    /** Reorders the list chronologically. */
+    SORT("sort");
 
     private final String keyword;
 
