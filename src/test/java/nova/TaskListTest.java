@@ -167,6 +167,33 @@ public class TaskListTest {
         assertEquals(0, tasks.find("bicycle").size());
     }
 
+    @Test
+    public void checkIndexInRange_indexInsideList_noExceptionThrown() throws NovaException {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("first"), new Todo("second"), new Todo("third"));
+
+        tasks.checkIndexInRange(0);
+        tasks.checkIndexInRange(2);
+    }
+
+    @Test
+    public void checkIndexInRange_indexPastEndOfList_exceptionThrown() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("first"), new Todo("second"), new Todo("third"));
+
+        NovaException e = assertThrows(NovaException.class, () -> tasks.checkIndexInRange(3));
+        assertEquals("There is no task number 4 in your list.", e.getMessage());
+    }
+
+    @Test
+    public void checkIndexInRange_negativeIndexOrEmptyList_exceptionThrown() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("first"));
+
+        assertThrows(NovaException.class, () -> tasks.checkIndexInRange(-1));
+        assertThrows(NovaException.class, () -> new TaskList().checkIndexInRange(0));
+    }
+
     /** Pulls the description out of a task's save-file line, for readable assertions. */
     private static String matchDescription(Task task) {
         return task.toFileString().split(" \\| ", -1)[2];

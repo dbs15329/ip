@@ -11,13 +11,11 @@ import nova.command.Command;
  * {@link Parser} (reading input) and the {@link Command} classes.
  *
  * <p>Replies are returned as text rather than printed, so the same chatbot
- * backs both the console front end in {@link #run()} and the GUI.
+ * backs both the console front end in {@link Cli} and the GUI.
  */
 public class Nova {
     /** Save file location, relative to the project root. */
     private static final String DATA_FILE = "data/nova.txt";
-
-    private static final String LINE = "____________________________________________________________";
 
     private final Ui ui;
     private final Storage storage;
@@ -101,34 +99,12 @@ public class Nova {
         return isExit;
     }
 
-    /** Runs the chatbot as a console app, reading and replying until told to stop. */
-    public void run() {
-        printBlock(getGreeting());
-        printBlock(loadTasks());
-
-        while (!isExit) {
-            printBlock(getResponse(ui.readCommand()));
-        }
-
-        ui.close();
-    }
-
-    /** Prints a reply framed by divider lines, skipping it when there is nothing to say. */
-    private static void printBlock(String message) {
-        if (message.isEmpty()) {
-            return;
-        }
-        System.out.println(LINE);
-        System.out.println(message);
-        System.out.println(LINE);
-    }
-
     /**
      * Starts the chatbot as a console app.
      *
      * @param args command line arguments; none are used
      */
     public static void main(String[] args) {
-        new Nova(DATA_FILE).run();
+        new Cli(new Nova(DATA_FILE)).run();
     }
 }
