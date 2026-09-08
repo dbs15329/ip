@@ -2,6 +2,7 @@ package nova;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 import nova.task.Task;
 
@@ -161,9 +162,9 @@ public class Ui {
 
     /** Appends the given tasks, numbered from one. */
     private void addNumbered(List<Task> tasks) {
-        for (int i = 0; i < tasks.size(); i++) {
-            addLines(" " + (i + 1) + "." + tasks.get(i));
-        }
+        addLines(IntStream.range(0, tasks.size())
+                .mapToObj(i -> " " + (i + 1) + "." + tasks.get(i))
+                .toArray(String[]::new));
     }
 
     /**

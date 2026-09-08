@@ -72,10 +72,11 @@ public class Storage {
                     + " Starting with an empty task list.");
         }
 
-        for (String line : lines) {
-            if (line.isBlank()) {
-                continue;
-            }
+        List<String> taskLines = lines.stream()
+                .filter(line -> !line.isBlank())
+                .toList();
+
+        for (String line : taskLines) {
             try {
                 tasks.add(parseSavedTask(line));
             } catch (NovaException e) {
@@ -94,10 +95,9 @@ public class Storage {
      * @throws NovaException if the file cannot be written
      */
     public void save(List<Task> tasks) throws NovaException {
-        List<String> lines = new ArrayList<>();
-        for (Task task : tasks) {
-            lines.add(task.toFileString());
-        }
+        List<String> lines = tasks.stream()
+                .map(Task::toFileString)
+                .toList();
 
         try {
             Path parent = file.getParent();
