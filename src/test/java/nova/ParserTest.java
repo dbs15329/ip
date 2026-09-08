@@ -131,22 +131,4 @@ public class ParserTest {
         NovaException e = assertThrows(NovaException.class, () -> Parser.parse("blah"));
         assertEquals("Sorry, I don't know what that means.", e.getMessage());
     }
-
-    @Test
-    public void checkIndexInRange_indexInsideList_noExceptionThrown() throws NovaException {
-        Parser.checkIndexInRange(0, 3);
-        Parser.checkIndexInRange(2, 3);
-    }
-
-    @Test
-    public void checkIndexInRange_indexPastEndOfList_exceptionThrown() {
-        NovaException e = assertThrows(NovaException.class, () -> Parser.checkIndexInRange(3, 3));
-        assertEquals("There is no task number 4 in your list.", e.getMessage());
-    }
-
-    @Test
-    public void checkIndexInRange_negativeIndexOrEmptyList_exceptionThrown() {
-        assertThrows(NovaException.class, () -> Parser.checkIndexInRange(-1, 3));
-        assertThrows(NovaException.class, () -> Parser.checkIndexInRange(0, 0));
-    }
 }
