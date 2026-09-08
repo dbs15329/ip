@@ -69,6 +69,11 @@ test {
 
 application {
     mainClass = 'nova.Launcher'
+
+    // Assertions are disabled by default in the JVM. Turning them on for
+    // `gradlew run` means the assumptions documented by `assert` are actually
+    // checked while developing. Gradle already enables them for `test`.
+    applicationDefaultJvmArgs = ['-ea']
 }
 
 jar {

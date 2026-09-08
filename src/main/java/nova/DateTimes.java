@@ -122,6 +122,7 @@ public final class DateTimes {
      * @return text such as {@code Dec 02 2019} or {@code Dec 02 2019, 6:00pm}
      */
     public static String format(LocalDateTime dateTime) {
+        assert dateTime != null : "a task with no date should not reach the formatter";
         if (dateTime.toLocalTime().equals(LocalTime.MIDNIGHT)) {
             return dateTime.format(DISPLAY_DATE);
         }
